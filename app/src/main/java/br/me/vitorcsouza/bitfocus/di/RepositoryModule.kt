@@ -4,6 +4,8 @@ import br.me.vitorcsouza.bitfocus.data.local.datasource.focus.FocusDataSource
 import br.me.vitorcsouza.bitfocus.data.local.datasource.focus.FocusDataSourceImpl
 import br.me.vitorcsouza.bitfocus.data.repository.FocusRepositoryImpl
 import br.me.vitorcsouza.bitfocus.domain.repository.FocusRepository
+import br.me.vitorcsouza.bitfocus.domain.usecase.home.HomeUseCase
+import br.me.vitorcsouza.bitfocus.domain.usecase.home.HomeUseCaseImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -26,4 +28,10 @@ abstract class RepositoryModule {
     abstract fun bindFocusRepository(
         impl: FocusRepositoryImpl
     ): FocusRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindHomeUseCase(
+        impl: HomeUseCaseImpl
+    ): HomeUseCase
 }
