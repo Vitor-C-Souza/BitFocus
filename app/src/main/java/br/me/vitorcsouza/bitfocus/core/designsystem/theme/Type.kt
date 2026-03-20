@@ -1,4 +1,4 @@
-package br.me.vitorcsouza.bitfocus.ui.theme
+package br.me.vitorcsouza.bitfocus.core.designsystem.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
