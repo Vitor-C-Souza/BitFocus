@@ -1,4 +1,4 @@
-package br.me.vitorcsouza.bitfocus.core.designsystem.theme
+package br.me.vitorcsouza.bitfocus.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

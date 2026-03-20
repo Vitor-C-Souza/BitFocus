@@ -42,7 +42,7 @@ class HomeViewModel @Inject constructor(
                 val seconds = remainingTime % 60
                 _state.update {
                     it.copy(
-                        timesDisplay = String.format("%02d:%02d", minutes, seconds),
+                        timerDisplay = String.format("%02d:%02d", minutes, seconds),
                         progress = remainingTime.toFloat() / durationSeconds
                     )
                 }
