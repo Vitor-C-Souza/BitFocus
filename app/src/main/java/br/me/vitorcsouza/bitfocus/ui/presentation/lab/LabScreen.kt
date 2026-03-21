@@ -1,7 +1,6 @@
 package br.me.vitorcsouza.bitfocus.ui.presentation.lab
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,12 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import br.me.vitorcsouza.bitfocus.ui.components.BentoCard
+import br.me.vitorcsouza.bitfocus.ui.components.WeeklyTrendChart
 import br.me.vitorcsouza.bitfocus.ui.theme.DeepCharcoal
 import br.me.vitorcsouza.bitfocus.ui.theme.ElectricCyan
 import br.me.vitorcsouza.bitfocus.ui.theme.SecondaryPeriwinkle
-import br.me.vitorcsouza.bitfocus.ui.theme.TextGray
 import br.me.vitorcsouza.bitfocus.ui.theme.White
 
 @Composable
@@ -55,35 +55,54 @@ fun LabContent(
                 .fillMaxSize()
                 .padding(padding)
                 .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Column {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
-                    "Focus Lab",
+                    text = "Focus Lab",
                     color = White,
                     style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = (-0.5).sp
                 )
                 Text(
-                    "Your productivity insights",
-                    color = SecondaryPeriwinkle
+                    text = "Your productivity insights",
+                    color = SecondaryPeriwinkle,
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
 
-            BentoCard(modifier = Modifier.height(280.dp)) {
-                Text(
-                    "Weekly Trend",
-                    color = White,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    "Sessions completed this week",
-                    color = SecondaryPeriwinkle,
-                    style = MaterialTheme.typography.bodySmall
+            BentoCard(modifier = Modifier.height(300.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        "Weekly Trend",
+                        color = White,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        "Sessions completed this week",
+                        color = SecondaryPeriwinkle,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+
+                WeeklyTrendChart(
+                    data = weeklyTrend,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
                 )
 
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Text("Chart Placeholder", color = ElectricCyan)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+                    days.forEach { day ->
+                        Text(day, color = SecondaryPeriwinkle, fontSize = 10.sp, fontWeight = FontWeight.Medium)
+                    }
                 }
             }
 
@@ -95,35 +114,41 @@ fun LabContent(
                     Text(
                         "TOTAL BITS",
                         color = SecondaryPeriwinkle,
-                        style = MaterialTheme.typography.labelSmall
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp
                     )
                     Text(
-                        "$totalBits",
+                        text = "$totalBits",
                         color = ElectricCyan,
-                        style = MaterialTheme.typography.displaySmall,
+                        style = MaterialTheme.typography.displayMedium,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        "sessions focused",
+                        text = "sessions\nfocused",
                         color = SecondaryPeriwinkle,
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        lineHeight = 16.sp
                     )
                 }
                 BentoCard(modifier = Modifier.weight(1f)) {
                     Text("STREAK",
                         color = SecondaryPeriwinkle,
-                        style = MaterialTheme.typography.labelSmall
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp
                     )
                     Text(
                         text = "$streakDays",
                         color = ElectricCyan,
-                        style = MaterialTheme.typography.displaySmall,
+                        style = MaterialTheme.typography.displayMedium,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        "days in a row",
+                        text = "days in\na row",
                         color = SecondaryPeriwinkle,
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        lineHeight = 16.sp
                     )
                 }
             }
@@ -132,29 +157,34 @@ fun LabContent(
                 Text(
                     "TOTAL FOCUS TIME",
                     color = SecondaryPeriwinkle,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 1.sp
                 )
-                Row(verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(vertical = 4.dp)
+                ) {
                     Text(
                         text = String.format(java.util.Locale.US, "%.1f", totalHours),
                         color = ElectricCyan,
-                        style = MaterialTheme.typography.displayMedium,
+                        style = MaterialTheme.typography.displayLarge,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        " hours",
+                        text = "hours",
                         color = SecondaryPeriwinkle,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(bottom = 12.dp)
                     )
                 }
                 Text(
-                    "+12% from last week",
-                    color = TextGray.copy(alpha = 0.7f),
+                    text = "+12% from last week",
+                    color = SecondaryPeriwinkle.copy(alpha = 0.6f),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-
         }
     }
 }
@@ -162,13 +192,11 @@ fun LabContent(
 @Preview
 @Composable
 private fun LabScreenPreview() {
-
     LabContent(
-        totalBits = 42,
-        totalHours = 123.5,
-        streakDays = 7,
-        weeklyTrend = listOf(1, 2, 3, 4, 5, 6, 7),
+        totalBits = 142,
+        totalHours = 68.5,
+        streakDays = 12,
+        weeklyTrend = listOf(4, 6, 5, 8, 7, 9, 6),
         isLoading = false
     )
-
 }
