@@ -1,9 +1,10 @@
 package br.me.vitorcsouza.bitfocus.ui.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
@@ -21,7 +22,7 @@ fun BentoCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Surface(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxWidth(),
         color = DarkSlate,
         shape = RoundedCornerShape(24.dp),
         border = BorderStroke(1.dp, BorderGray),
@@ -29,6 +30,7 @@ fun BentoCard(
             {
                 Column(
                     modifier = Modifier.padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                     content = content
                 )
             }
