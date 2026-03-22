@@ -66,8 +66,8 @@ fun BitFocusNavGraph(
             if (isPreview) {
                 HomeScreenContent(
                     state = HomeStates(
+                        timerDisplay = String.format(Locale.US, "%02d:00", duration),
                         currentGoal = goal,
-                        timerDisplay = String.format(Locale.US, "%02d:00", duration)
                     ),
                     onToggleTimer = {},
                     onOpenAnalytics = { navController.navigate("lab") }

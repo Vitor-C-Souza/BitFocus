@@ -70,7 +70,9 @@ fun HomeScreenContent(
 
             BitTimerComponent(
                 progress = state.progress,
-                timerDisplay = state.timerDisplay
+                timerDisplay = state.timerDisplay,
+                isRunning = state.isRunning,
+                accentColor = state.accentColor
             )
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {

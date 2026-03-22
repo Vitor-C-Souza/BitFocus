@@ -1,5 +1,12 @@
 package br.me.vitorcsouza.bitfocus.ui.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,11 +15,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
@@ -28,58 +41,82 @@ import br.me.vitorcsouza.bitfocus.ui.theme.White
 fun BitTimerComponent(
     progress: Float,
     timerDisplay: String,
+    isRunning: Boolean,
+    accentColor: Color = ElectricCyan,
     modifier: Modifier = Modifier,
 ) {
-    Box(contentAlignment = Alignment.Center, modifier = modifier.size(320.dp)) {
+
+    val animatedColor by animateColorAsState(
+        targetValue = if (progress < 0.2f) Color.Red else accentColor,
+        animationSpec = tween(1000),
+        label = "colorTransition"
+    )
+
+    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+    val pulseScale by infiniteTransition.animateFloat(
+        initialValue = 1.0f,
+        targetValue = if (isRunning) 1.03f else 1.0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = LinearOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ), label = "scale"
+    )
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .size(320.dp)
+            .graphicsLayer(scaleX = pulseScale, scaleY = pulseScale)
+    ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val strokeWidthPx = 6.dp.toPx()
-            val glowRadiusPx = 15.dp.toPx()
+            val strokeWidth = 12.dp.toPx()
+            val radius = size.minDimension / 2.2f
 
             drawCircle(
-                color = BorderGray.copy(alpha = 0.5f),
-                style = Stroke(width = 2.dp.toPx()),
-                radius = size.minDimension / 2.1f
+                color = BorderGray.copy(alpha = 0.2f),
+                style = Stroke(width = strokeWidth),
+                radius = radius
             )
 
-            drawIntoCanvas { canvas ->
-                val paint = Paint().asFrameworkPaint().apply {
-                    isAntiAlias = true
-                    style = android.graphics.Paint.Style.STROKE
-                    this.strokeWidth = strokeWidthPx
-                    strokeCap = android.graphics.Paint.Cap.ROUND
-                    color = ElectricCyan.toArgb()
-                    // Efeito de brilho neon
-                    setShadowLayer(glowRadiusPx, 0f, 0f, ElectricCyan.toArgb())
-                }
-
-                canvas.nativeCanvas.drawArc(
-                    glowRadiusPx,
-                    glowRadiusPx,
-                    size.width - glowRadiusPx,
-                    size.height - glowRadiusPx,
-                    -90f,
-                    progress * 360f,
-                    false,
-                    paint
+            drawArc(
+                color = animatedColor,
+                startAngle = -90f,
+                sweepAngle = 360f * progress,
+                useCenter = false,
+                style = Stroke(
+                    width = strokeWidth,
+                    cap = StrokeCap.Round
                 )
-            }
+            )
+
+            drawArc(
+                color = animatedColor.copy(alpha = 0.3f),
+                startAngle = -90f,
+                sweepAngle = 360f * progress,
+                useCenter = false,
+                style = Stroke(
+                    width = strokeWidth * 1.5f,
+                    cap = StrokeCap.Round
+                )
+            )
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = timerDisplay,
                 style = MaterialTheme.typography.displayLarge.copy(
-                    fontWeight = FontWeight.Light,
+                    fontWeight = FontWeight.Bold,
                     color = White,
-                    fontSize = 84.sp,
-                    letterSpacing = (-2).sp
+                    fontSize = 64.sp,
+                    letterSpacing = (-2).sp,
+                    shadow = Shadow(color = animatedColor, blurRadius = 20f)
                 ),
             )
             Text(
                 text = "minutes",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = SecondaryPeriwinkle,
-                    fontSize = 20.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
             )
@@ -92,6 +129,7 @@ fun BitTimerComponent(
 private fun BitTimerComponentPreview() {
     BitTimerComponent(
         progress = 0.8f,
-        timerDisplay = "25:00"
+        timerDisplay = "25:00",
+        isRunning = true
     )
 }

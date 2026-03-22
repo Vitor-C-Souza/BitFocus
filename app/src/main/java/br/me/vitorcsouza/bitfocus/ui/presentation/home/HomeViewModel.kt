@@ -1,6 +1,7 @@
 package br.me.vitorcsouza.bitfocus.ui.presentation.home
 
 import android.content.Context
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +12,7 @@ import androidx.work.workDataOf
 import br.me.vitorcsouza.bitfocus.data.worker.TimerWorker
 import br.me.vitorcsouza.bitfocus.domain.model.FocusSession
 import br.me.vitorcsouza.bitfocus.domain.usecase.home.HomeUseCase
+import br.me.vitorcsouza.bitfocus.ui.theme.ElectricCyan
 import br.me.vitorcsouza.bitfocus.utils.NotificationHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -33,11 +35,18 @@ class HomeViewModel @Inject constructor(
 
     private val initialDuration = savedStateHandle.get<Int>("duration") ?: 25
     private val initialGoal = savedStateHandle.get<String>("goal") ?: "Focus Session"
+    private val initialEnergy = savedStateHandle.get<String>("energy") ?: "MID"
 
+    private val energyColor = when(initialEnergy) {
+        "LOW" -> Color(0xFF81D4FA)
+        "HIGH" -> Color(0xFFD500F9)
+        else -> ElectricCyan
+    }
     private val _state = MutableStateFlow(
         HomeStates(
             timerDisplay = String.format(Locale.US, "%02d:00", initialDuration),
-            currentGoal = initialGoal
+            currentGoal = initialGoal,
+            accentColor = energyColor
         )
     )
     val state = _state.asStateFlow()
