@@ -4,6 +4,11 @@ import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
+import br.me.vitorcsouza.bitfocus.data.worker.TimerWorker
 import br.me.vitorcsouza.bitfocus.domain.model.FocusSession
 import br.me.vitorcsouza.bitfocus.domain.usecase.home.HomeUseCase
 import br.me.vitorcsouza.bitfocus.utils.NotificationHelper
@@ -16,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -72,6 +78,23 @@ class HomeViewModel @Inject constructor(
                 remainingTime--
             }
         }
+
+        val workRequest = OneTimeWorkRequestBuilder<TimerWorker>()
+            .setInitialDelay(durationSeconds, TimeUnit.SECONDS)
+            .setInputData(
+                workDataOf(
+                "duration" to durationSeconds,
+                "goal" to _state.value.currentGoal
+            )
+            )
+            .addTag("timer_work")
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            "timer_unique_work",
+            ExistingWorkPolicy.REPLACE,
+            workRequest
+        )
     }
 
 
@@ -82,6 +105,8 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun onTimerFinished() {
+        WorkManager.getInstance(context).cancelUniqueWork("timer_unique_work")
+
         viewModelScope.launch {
             val session = FocusSession(
                 startTime = System.currentTimeMillis() - (totalSeconds * 1000),
