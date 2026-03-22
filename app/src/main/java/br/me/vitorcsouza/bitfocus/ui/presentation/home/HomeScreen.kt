@@ -1,5 +1,6 @@
 package br.me.vitorcsouza.bitfocus.ui.presentation.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,19 +24,29 @@ import br.me.vitorcsouza.bitfocus.ui.theme.White
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    onFinished: () -> Unit = {},
+    onOpenAnalytics: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+    
+    // Simple logic to trigger onFinished when session is completed
+    if (state.sessionCompleted) {
+        onFinished()
+    }
+
     HomeScreenContent(
         state = state,
-        onToggleTimer = { viewModel.toggleTimer() }
+        onToggleTimer = { viewModel.toggleTimer() },
+        onOpenAnalytics = onOpenAnalytics
     )
 }
 
 @Composable
-private fun HomeScreenContent(
+fun HomeScreenContent(
     state: HomeStates,
-    onToggleTimer: () -> Unit
+    onToggleTimer: () -> Unit,
+    onOpenAnalytics: () -> Unit = {}
 ) {
     Scaffold(
         containerColor = DeepCharcoal
@@ -50,6 +61,7 @@ private fun HomeScreenContent(
         ) {
             Text(
                 text = "BitFocus",
+                color = White,
                 style = MaterialTheme.typography.headlineMedium
             )
 
@@ -71,6 +83,15 @@ private fun HomeScreenContent(
                 onClick = onToggleTimer,
                 text = if (state.isRunning) "Stop" else "Start"
             )
+            
+            Text(
+                text = "View Insights",
+                color = White.copy(alpha = 0.6f),
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .clickable { onOpenAnalytics() },
+                style = MaterialTheme.typography.labelLarge
+            )
         }
     }
 }
@@ -78,7 +99,6 @@ private fun HomeScreenContent(
 @Preview
 @Composable
 private fun HomeScreenPreview() {
-    // Using HomeScreenContent instead of HomeScreen to avoid ViewModel instantiation in Preview
     HomeScreenContent(
         state = HomeStates(),
         onToggleTimer = {}
