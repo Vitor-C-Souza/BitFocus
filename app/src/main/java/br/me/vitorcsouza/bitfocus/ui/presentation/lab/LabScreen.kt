@@ -1,5 +1,6 @@
 package br.me.vitorcsouza.bitfocus.ui.presentation.lab
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,6 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,7 +32,10 @@ import br.me.vitorcsouza.bitfocus.ui.theme.SecondaryPeriwinkle
 import br.me.vitorcsouza.bitfocus.ui.theme.White
 
 @Composable
-fun LabScreen(viewModel: LabViewModel = hiltViewModel()) {
+fun LabScreen(
+    viewModel: LabViewModel = hiltViewModel(),
+    onBack: () -> Unit = {}
+) {
 
     val state by viewModel.state.collectAsState()
 
@@ -38,6 +45,7 @@ fun LabScreen(viewModel: LabViewModel = hiltViewModel()) {
         streakDays = state.streakDays,
         weeklyTrend = state.weeklyTrend,
         isLoading = state.isLoading,
+        onBack = onBack
     )
 }
 
@@ -48,6 +56,7 @@ fun LabContent(
     streakDays: Int,
     weeklyTrend: List<Int>,
     isLoading: Boolean,
+    onBack: () -> Unit = {}
 ) {
     Scaffold(containerColor = DeepCharcoal) { padding ->
         Column(
@@ -57,19 +66,31 @@ fun LabContent(
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = "Focus Lab",
-                    color = White,
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = (-0.5).sp
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = White,
+                    modifier = Modifier.clickable { onBack() }
                 )
-                Text(
-                    text = "Your productivity insights",
-                    color = SecondaryPeriwinkle,
-                    style = MaterialTheme.typography.bodyLarge
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        text = "Focus Lab",
+                        color = White,
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = (-0.5).sp
+                    )
+                    Text(
+                        text = "Your productivity insights",
+                        color = SecondaryPeriwinkle,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
 
             BentoCard(modifier = Modifier.height(300.dp)) {

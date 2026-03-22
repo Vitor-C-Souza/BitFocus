@@ -22,6 +22,7 @@ import br.me.vitorcsouza.bitfocus.ui.presentation.setup.SetupContent
 import br.me.vitorcsouza.bitfocus.ui.presentation.setup.SetupScreen
 import br.me.vitorcsouza.bitfocus.ui.presentation.setup.SetupStates
 import br.me.vitorcsouza.bitfocus.ui.theme.BitFocusTheme
+import java.util.Locale
 
 @Composable
 fun BitFocusNavGraph(
@@ -64,7 +65,10 @@ fun BitFocusNavGraph(
             
             if (isPreview) {
                 HomeScreenContent(
-                    state = HomeStates(currentGoal = goal),
+                    state = HomeStates(
+                        currentGoal = goal,
+                        timerDisplay = String.format(Locale.US, "%02d:00", duration)
+                    ),
                     onToggleTimer = {},
                     onOpenAnalytics = { navController.navigate("lab") }
                 )

@@ -5,5 +5,5 @@ data class HomeStates(
     val progress: Float = 1f,
     val isRunning: Boolean = false,
     val currentGoal: String = "Coding Session",
-    val sessionCompleted: Boolean = false
+    val sessionComplete: Boolean = false
 )

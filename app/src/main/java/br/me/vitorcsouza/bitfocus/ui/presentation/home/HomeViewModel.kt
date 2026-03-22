@@ -1,27 +1,43 @@
 package br.me.vitorcsouza.bitfocus.ui.presentation.home
 
+import android.content.Context
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.me.vitorcsouza.bitfocus.domain.model.FocusSession
 import br.me.vitorcsouza.bitfocus.domain.usecase.home.HomeUseCase
+import br.me.vitorcsouza.bitfocus.utils.NotificationHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val homeUseCase: HomeUseCase
+    private val homeUseCase: HomeUseCase,
+    @param:ApplicationContext private val context: Context,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val _state = MutableStateFlow(HomeStates())
+
+    private val initialDuration = savedStateHandle.get<Int>("duration") ?: 25
+    private val initialGoal = savedStateHandle.get<String>("goal") ?: "Focus Session"
+
+    private val _state = MutableStateFlow(
+        HomeStates(
+            timerDisplay = String.format(Locale.US, "%02d:00", initialDuration),
+            currentGoal = initialGoal
+        )
+    )
     val state = _state.asStateFlow()
 
     private var timerJob: Job? = null
-    private val totalSeconds = 25 * 60L
+    private val totalSeconds = initialDuration * 60L
 
     fun toggleTimer() {
         if (_state.value.isRunning) {
@@ -42,7 +58,7 @@ class HomeViewModel @Inject constructor(
                 val seconds = remainingTime % 60
                 _state.update {
                     it.copy(
-                        timerDisplay = String.format("%02d:%02d", minutes, seconds),
+                        timerDisplay = String.format(Locale.US, "%02d:%02d", minutes, seconds),
                         progress = remainingTime.toFloat() / durationSeconds
                     )
                 }
@@ -58,6 +74,8 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+
+
     private fun stopTimer() {
         timerJob?.cancel()
         _state.update { it.copy(isRunning = false) }
@@ -71,9 +89,15 @@ class HomeViewModel @Inject constructor(
                 duration = totalSeconds,
                 goal = _state.value.currentGoal
             )
+            NotificationHelper.showNotification(context, _state.value.currentGoal)
             homeUseCase.saveCompletedSession(session)
-            _state.update { it.copy(sessionCompleted = true, isRunning = false) }
+
+            _state.update { it.copy(sessionComplete = true, isRunning = false) }
         }
 
+    }
+
+    fun onNavigatedToCompletion() {
+        _state.update { it.copy(sessionComplete = false) }
     }
 }

@@ -1,5 +1,8 @@
 package br.me.vitorcsouza.bitfocus.ui.presentation.completion
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -25,8 +28,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -56,6 +61,13 @@ fun CompletionScreenContent(
     state: CompletionStates,
     onClose: () -> Unit
 ) {
+
+    val scale by animateFloatAsState(
+        targetValue = 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "CheckScale"
+    )
+
     Scaffold(containerColor = DeepCharcoal) { padding ->
         Column(
             modifier = Modifier
@@ -69,6 +81,7 @@ fun CompletionScreenContent(
             Box(
                 modifier = Modifier
                     .size(120.dp)
+                    .scale(scale)
                     .border(2.dp, ElectricCyan, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
