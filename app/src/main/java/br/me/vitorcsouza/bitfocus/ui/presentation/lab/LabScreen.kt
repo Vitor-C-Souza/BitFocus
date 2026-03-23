@@ -1,16 +1,23 @@
 package br.me.vitorcsouza.bitfocus.ui.presentation.lab
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -19,31 +26,29 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import br.me.vitorcsouza.bitfocus.domain.model.SessionCategory
 import br.me.vitorcsouza.bitfocus.ui.components.BentoCard
+import br.me.vitorcsouza.bitfocus.ui.components.TimeCostChart
 import br.me.vitorcsouza.bitfocus.ui.components.WeeklyTrendChart
-import br.me.vitorcsouza.bitfocus.ui.theme.DeepCharcoal
-import br.me.vitorcsouza.bitfocus.ui.theme.ElectricCyan
-import br.me.vitorcsouza.bitfocus.ui.theme.SecondaryPeriwinkle
-import br.me.vitorcsouza.bitfocus.ui.theme.White
+import br.me.vitorcsouza.bitfocus.ui.theme.*
 
 @Composable
 fun LabScreen(
-    viewModel: LabViewModel = hiltViewModel(),
-    onBack: () -> Unit = {}
+    onBack: () -> Unit,
+    viewModel: LabViewModel = hiltViewModel()
 ) {
-
     val state by viewModel.state.collectAsState()
 
     LabContent(
         totalBits = state.totalBits,
         totalHours = state.totalHours,
-        streakDays = state.streakDays,
         weeklyTrend = state.weeklyTrend,
+        categoryStats = state.categoryStats,
         isLoading = state.isLoading,
         onBack = onBack
     )
@@ -53,77 +58,47 @@ fun LabScreen(
 fun LabContent(
     totalBits: Int,
     totalHours: Double,
-    streakDays: Int,
     weeklyTrend: List<Int>,
+    categoryStats: List<CategoryStat>,
     isLoading: Boolean,
     onBack: () -> Unit = {}
 ) {
+    val scrollState = rememberScrollState()
+
     Scaffold(containerColor = DeepCharcoal) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .verticalScroll(scrollState)
                 .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
+            // Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = White,
-                    modifier = Modifier.clickable { onBack() }
-                )
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(
-                        text = "Focus Lab",
-                        color = White,
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = (-0.5).sp
-                    )
-                    Text(
-                        text = "Your productivity insights",
-                        color = SecondaryPeriwinkle,
-                        style = MaterialTheme.typography.bodyLarge
+                IconButton(onClick = onBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = White
                     )
                 }
-            }
-
-            BentoCard(modifier = Modifier.height(300.dp)) {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Column {
                     Text(
-                        "Weekly Trend",
+                        text = "The Lab",
                         color = White,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        "Sessions completed this week",
+                        text = "Your cognitive performance insights",
                         color = SecondaryPeriwinkle,
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodyMedium
                     )
-                }
-
-                WeeklyTrendChart(
-                    data = weeklyTrend,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp)
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-                    days.forEach { day ->
-                        Text(day, color = SecondaryPeriwinkle, fontSize = 10.sp, fontWeight = FontWeight.Medium)
-                    }
                 }
             }
 
@@ -131,93 +106,155 @@ fun LabContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                BentoCard(modifier = Modifier.weight(1f)) {
+                StatCard(
+                    modifier = Modifier.weight(1f),
+                    label = "Total Bits",
+                    value = totalBits.toString(),
+                    color = ElectricCyan
+                )
+                StatCard(
+                    modifier = Modifier.weight(1f),
+                    label = "Focus Hours",
+                    value = String.format("%.1f", totalHours),
+                    color = VibrantPurple
+                )
+            }
+
+            // Weekly Trend Chart
+            BentoCard {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text(
-                        "TOTAL BITS",
-                        color = SecondaryPeriwinkle,
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 1.sp
-                    )
-                    Text(
-                        text = "$totalBits",
-                        color = ElectricCyan,
-                        style = MaterialTheme.typography.displayMedium,
+                        text = "Weekly Focus Trend",
+                        color = White,
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(
-                        text = "sessions\nfocused",
-                        color = SecondaryPeriwinkle,
-                        style = MaterialTheme.typography.bodySmall,
-                        lineHeight = 16.sp
-                    )
-                }
-                BentoCard(modifier = Modifier.weight(1f)) {
-                    Text("STREAK",
-                        color = SecondaryPeriwinkle,
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 1.sp
-                    )
-                    Text(
-                        text = "$streakDays",
-                        color = ElectricCyan,
-                        style = MaterialTheme.typography.displayMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "days in\na row",
-                        color = SecondaryPeriwinkle,
-                        style = MaterialTheme.typography.bodySmall,
-                        lineHeight = 16.sp
+                    WeeklyTrendChart(
+                        data = weeklyTrend,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
                     )
                 }
             }
 
             BentoCard {
-                Text(
-                    "TOTAL FOCUS TIME",
-                    color = SecondaryPeriwinkle,
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.sp
-                )
-                Row(
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(vertical = 4.dp)
-                ) {
-                    Text(
-                        text = String.format(java.util.Locale.US, "%.1f", totalHours),
-                        color = ElectricCyan,
-                        style = MaterialTheme.typography.displayLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "hours",
-                        color = SecondaryPeriwinkle,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Column {
+                        Text(
+                            text = "Time Investment",
+                            color = White,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Distribution by life category",
+                            color = SecondaryPeriwinkle,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+
+                    if (categoryStats.isEmpty() && !isLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("No data yet. Start a session!", color = BorderGray)
+                        }
+                    } else {
+                        TimeCostChart(
+                            stats = categoryStats,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(240.dp)
+                        )
+                    }
                 }
-                Text(
-                    text = "+12% from last week",
-                    color = SecondaryPeriwinkle.copy(alpha = 0.6f),
-                    style = MaterialTheme.typography.bodySmall
-                )
+            }
+
+            // Legend
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                categoryStats.forEach { stat ->
+                    CategoryLegendItem(stat)
+                }
             }
         }
     }
 }
 
-@Preview
 @Composable
-private fun LabScreenPreview() {
-    LabContent(
-        totalBits = 142,
-        totalHours = 68.5,
-        streakDays = 12,
-        weeklyTrend = listOf(4, 6, 5, 8, 7, 9, 6),
-        isLoading = false
-    )
+fun StatCard(
+    label: String,
+    value: String,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    BentoCard(modifier = modifier) {
+        Column {
+            Text(label, color = SecondaryPeriwinkle, style = MaterialTheme.typography.labelMedium)
+            Text(
+                value,
+                color = color,
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
+fun CategoryLegendItem(stat: CategoryStat) {
+    val color = when(stat.category) {
+        SessionCategory.WORK -> ElectricCyan
+        SessionCategory.STUDY -> SoftBlue
+        SessionCategory.LEISURE -> VibrantPurple
+        SessionCategory.OTHER -> TextGray
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(12.dp)
+                    .background(color, MaterialTheme.shapes.small)
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = stat.category.name.lowercase().replaceFirstChar { it.uppercase() },
+                color = White,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+        Text(
+            text = "${stat.totalMinutes}m (${(stat.percentage * 100).toInt()}%)",
+            color = SecondaryPeriwinkle,
+            style = MaterialTheme.typography.labelLarge
+        )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF0B0E14)
+@Composable
+fun LabContentPreview() {
+    BitFocusTheme {
+        LabContent(
+            totalBits = 142,
+            totalHours = 68.5,
+            weeklyTrend = listOf(4, 6, 5, 8, 7, 9, 6),
+            categoryStats = listOf(
+                CategoryStat(SessionCategory.WORK, 1200, 0.4f),
+                CategoryStat(SessionCategory.STUDY, 900, 0.3f),
+                CategoryStat(SessionCategory.LEISURE, 600, 0.2f),
+                CategoryStat(SessionCategory.OTHER, 300, 0.1f)
+            ),
+            isLoading = false,
+            onBack = {}
+        )
+    }
 }

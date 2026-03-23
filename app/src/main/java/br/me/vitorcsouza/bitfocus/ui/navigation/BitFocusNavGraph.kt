@@ -94,8 +94,8 @@ fun BitFocusNavGraph(
                 LabContent(
                     totalBits = 142,
                     totalHours = 68.5,
-                    streakDays = 12,
                     weeklyTrend = listOf(4, 6, 5, 8, 7, 9, 6),
+                    categoryStats = emptyList(),
                     isLoading = false
                 )
             } else {

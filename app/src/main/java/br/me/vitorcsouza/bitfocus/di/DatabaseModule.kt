@@ -21,7 +21,9 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "bitfocus_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration(dropAllTables = true)
+            .build()
     }
 
     @Provides

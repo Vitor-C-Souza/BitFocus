@@ -29,21 +29,41 @@ class LabViewModel @Inject constructor(
                 val totalMinutes = sessions.sumOf { it.duration } / 60
                 val totalHours = totalMinutes / 60.0
 
+                val categoryStats = calculateCategoryStats(sessions)
+
                 _state.update {
                     it.copy(
                         totalBits = sessions.size,
                         totalHours = totalHours,
                         streakDays = calculateStreak(sessions),
+                        categoryStats = categoryStats,
                         isLoading = false
                     )
-
-
                 }
             }
         }
     }
 
+    private fun calculateCategoryStats(sessions: List<FocusSession>): List<CategoryStat> {
+        if (sessions.isEmpty()) return emptyList()
+
+        val totalDuration = sessions.sumOf { it.duration }.toFloat()
+        if (totalDuration == 0f) return emptyList()
+
+        return sessions.groupBy { it.category }
+            .map { (category, categorySessions) ->
+                val categoryDuration = categorySessions.sumOf { it.duration }
+                CategoryStat(
+                    category = category,
+                    totalMinutes = categoryDuration / 60,
+                    percentage = (categoryDuration / totalDuration)
+                )
+            }
+            .sortedByDescending { it.totalMinutes }
+    }
+
     private fun calculateStreak(sessions: List<FocusSession>): Int {
-        return if (sessions.isEmpty()) 0 else 12
+        // Implementação simplificada para o desafio
+        return if (sessions.isEmpty()) 0 else 1
     }
 }
