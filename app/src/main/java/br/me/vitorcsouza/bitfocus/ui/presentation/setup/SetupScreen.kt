@@ -45,7 +45,7 @@ import br.me.vitorcsouza.bitfocus.ui.theme.White
 @Composable
 fun SetupScreen(
     viewModel: SetupViewModel = hiltViewModel(),
-    onStartSession: (Int, String) -> Unit
+    onStartSession: (Int, String, EnergyLevel) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -65,7 +65,7 @@ fun SetupContent(
     onEnergyLevelSelected: (EnergyLevel) -> Unit,
     onDurationChanged: (Int) -> Unit,
     onGoalChanged: (String) -> Unit,
-    onStartSession: (Int, String) -> Unit
+    onStartSession: (Int, String, EnergyLevel) -> Unit
 ) {
     val scrollState = rememberScrollState()
     Scaffold(containerColor = DeepCharcoal) { padding ->
@@ -218,7 +218,7 @@ fun SetupContent(
 
             BitFocusButton(
                 text = "Start Focus",
-                onClick = { onStartSession(state.durationMinutes, state.sessionGoal) }
+                onClick = { onStartSession(state.durationMinutes, state.sessionGoal, state.energyLevel) }
             )
         }
     }
@@ -232,6 +232,6 @@ private fun SetupScreenPreview() {
         onEnergyLevelSelected = {},
         onDurationChanged = {},
         onGoalChanged = {},
-        onStartSession = { _, _ -> }
+        onStartSession = { _, _, _ -> }
     )
 }

@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import br.me.vitorcsouza.bitfocus.ui.presentation.setup.EnergyLevel
 import br.me.vitorcsouza.bitfocus.ui.theme.BorderGray
 import br.me.vitorcsouza.bitfocus.ui.theme.ElectricCyan
 import br.me.vitorcsouza.bitfocus.ui.theme.SecondaryPeriwinkle
@@ -27,11 +28,12 @@ import br.me.vitorcsouza.bitfocus.ui.theme.White
 
 @Composable
 fun BitTimerComponent(
+    modifier: Modifier = Modifier,
     progress: Float,
     timerDisplay: String,
     isRunning: Boolean = false,
     accentColor: Color = ElectricCyan,
-    modifier: Modifier = Modifier,
+    energyLevel: EnergyLevel = EnergyLevel.MID,
 ) {
     val animatedColor by animateColorAsState(
         targetValue = if (progress < 0.1f && isRunning) Color(0xFFFF5252) else accentColor,
@@ -39,12 +41,18 @@ fun BitTimerComponent(
         label = "ColorAnimation"
     )
 
+    val animationDuration = when(energyLevel) {
+        EnergyLevel.LOW -> 1500
+        EnergyLevel.MID -> 1000
+        EnergyLevel.HIGH -> 500
+    }
+
     val infiniteTransition = rememberInfiniteTransition(label = "PulseTransition")
     val pulseScale by infiniteTransition.animateFloat(
         initialValue = 1.0f,
         targetValue = if (isRunning) 1.04f else 1.0f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = LinearOutSlowInEasing),
+            animation = tween(animationDuration, easing = LinearOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
         label = "PulseScale"
@@ -73,7 +81,6 @@ fun BitTimerComponent(
                     this.strokeWidth = strokeWidthPx
                     strokeCap = android.graphics.Paint.Cap.ROUND
                     color = animatedColor.toArgb()
-                    // Aplica o brilho externo baseado na cor animada
                     setShadowLayer(glowRadiusPx, 0f, 0f, animatedColor.toArgb())
                 }
 
@@ -123,6 +130,7 @@ private fun BitTimerComponentPreview() {
         progress = 0.6f,
         timerDisplay = "25:00",
         isRunning = true,
-        accentColor = ElectricCyan
+        accentColor = ElectricCyan,
+        energyLevel = EnergyLevel.HIGH
     )
 }

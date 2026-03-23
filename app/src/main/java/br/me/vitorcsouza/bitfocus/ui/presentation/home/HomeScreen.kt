@@ -72,7 +72,8 @@ fun HomeScreenContent(
                 progress = state.progress,
                 timerDisplay = state.timerDisplay,
                 isRunning = state.isRunning,
-                accentColor = state.accentColor
+                accentColor = state.accentColor,
+                energyLevel = state.energyLevel
             )
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {

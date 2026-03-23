@@ -10,6 +10,8 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val ElectricCyan = Color(0xFF00E5FF)
+val SoftBlue = Color(0xFF2979FF)
+val VibrantPurple = Color(0xFFD500F9)
 val DeepCharcoal = Color(0xFF0B0E14)
 val DarkSlate = Color(0xFF161B22)
 val BorderGray = Color(0xFF30363D)

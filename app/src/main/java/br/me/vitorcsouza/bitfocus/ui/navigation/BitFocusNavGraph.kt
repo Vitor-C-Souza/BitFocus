@@ -4,6 +4,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -42,32 +43,40 @@ fun BitFocusNavGraph(
                     onEnergyLevelSelected = {},
                     onDurationChanged = {},
                     onGoalChanged = {},
-                    onStartSession = { duration, goal ->
-                        navController.navigate("home/$duration/$goal")
+                    onStartSession = { duration, goal, energy ->
+                        navController.navigate("home/$duration/$goal/${energy.name}")
                     }
                 )
             } else {
-                SetupScreen(onStartSession = { duration, goal ->
-                    navController.navigate("home/$duration/$goal")
+                SetupScreen(onStartSession = { duration, goal, energy ->
+                    navController.navigate("home/$duration/$goal/${energy.name}")
                 })
             }
         }
         
         composable(
-            route = "home/{duration}/{goal}",
+            route = "home/{duration}/{goal}/{energy}",
             arguments = listOf(
                 navArgument("duration") { type = NavType.IntType },
-                navArgument("goal") { type = NavType.StringType }
+                navArgument("goal") { type = NavType.StringType },
+                navArgument("energy") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             val duration = backStackEntry.arguments?.getInt("duration") ?: 0
             val goal = backStackEntry.arguments?.getString("goal") ?: "Focus"
-            
+            val energy = backStackEntry.arguments?.getString("energy") ?: "MID"
+
             if (isPreview) {
+                val previewColor = when(energy) {
+                    "LOW" -> Color(0xFF81D4FA)
+                    "HIGH" -> Color(0xFFD500F9)
+                    else -> Color(0xFF00E5FF)
+                }
                 HomeScreenContent(
                     state = HomeStates(
                         timerDisplay = String.format(Locale.US, "%02d:00", duration),
                         currentGoal = goal,
+                        accentColor = previewColor
                     ),
                     onToggleTimer = {},
                     onOpenAnalytics = { navController.navigate("lab") }
