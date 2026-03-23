@@ -99,7 +99,7 @@ fun BitFocusNavGraph(
                     isLoading = false
                 )
             } else {
-                LabScreen()
+                LabScreen(onBack = { navController.popBackStack() })
             }
         }
 
