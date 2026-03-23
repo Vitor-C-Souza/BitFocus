@@ -42,7 +42,7 @@ import br.me.vitorcsouza.bitfocus.ui.components.BitFocusButton
 import br.me.vitorcsouza.bitfocus.ui.theme.BorderGray
 import br.me.vitorcsouza.bitfocus.ui.theme.DeepCharcoal
 import br.me.vitorcsouza.bitfocus.ui.theme.ElectricCyan
-import br.me.vitorcsouza.bitfocus.ui.theme.SecondaryPeriwinkle
+import br.me.vitorcsouza.bitfocus.ui.theme.Periwinkle
 import br.me.vitorcsouza.bitfocus.ui.theme.White
 
 @Composable
@@ -102,7 +102,7 @@ fun CompletionScreenContent(
                 )
                 Text(
                     text = "Excellent focus. Well done.",
-                    color = SecondaryPeriwinkle,
+                    color = Periwinkle,
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
@@ -119,12 +119,12 @@ fun CompletionScreenContent(
                     Column {
                         Text(
                             "Goal",
-                            color = SecondaryPeriwinkle,
+                            color = Periwinkle,
                             style = MaterialTheme.typography.bodySmall
                         )
                         Text(
                             "Completed",
-                            color = SecondaryPeriwinkle,
+                            color = Periwinkle,
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -159,7 +159,7 @@ fun CompletionScreenContent(
                     Spacer(Modifier.width(16.dp))
                     Column {
                         Text("Streak Maintained", color = ElectricCyan, fontWeight = FontWeight.Bold)
-                        Text("${state.streakCount} days in a row", color = SecondaryPeriwinkle, style = MaterialTheme.typography.bodySmall)
+                        Text("${state.streakCount} days in a row", color = Periwinkle, style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
@@ -174,7 +174,7 @@ fun SummaryRow(label: String, value: String, valueColor: Color = White) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(label, color = SecondaryPeriwinkle)
+        Text(label, color = Periwinkle)
         Text(value, color = valueColor, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
     }
 }

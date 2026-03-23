@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import br.me.vitorcsouza.bitfocus.ui.presentation.setup.EnergyLevel
 import br.me.vitorcsouza.bitfocus.ui.theme.BorderGray
 import br.me.vitorcsouza.bitfocus.ui.theme.ElectricCyan
-import br.me.vitorcsouza.bitfocus.ui.theme.SecondaryPeriwinkle
+import br.me.vitorcsouza.bitfocus.ui.theme.Periwinkle
 import br.me.vitorcsouza.bitfocus.ui.theme.White
 
 @Composable
@@ -114,7 +114,7 @@ fun BitTimerComponent(
             Text(
                 text = "minutes",
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    color = SecondaryPeriwinkle,
+                    color = Periwinkle,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium
                 )

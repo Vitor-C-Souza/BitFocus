@@ -96,7 +96,7 @@ fun LabContent(
                     )
                     Text(
                         text = "Your cognitive performance insights",
-                        color = SecondaryPeriwinkle,
+                        color = Periwinkle,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -149,7 +149,7 @@ fun LabContent(
                         )
                         Text(
                             text = "Distribution by life category",
-                            color = SecondaryPeriwinkle,
+                            color = Periwinkle,
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -193,7 +193,7 @@ fun StatCard(
 ) {
     BentoCard(modifier = modifier) {
         Column {
-            Text(label, color = SecondaryPeriwinkle, style = MaterialTheme.typography.labelMedium)
+            Text(label, color = Periwinkle, style = MaterialTheme.typography.labelMedium)
             Text(
                 value,
                 color = color,
@@ -233,7 +233,7 @@ fun CategoryLegendItem(stat: CategoryStat) {
         }
         Text(
             text = "${stat.totalMinutes}m (${(stat.percentage * 100).toInt()}%)",
-            color = SecondaryPeriwinkle,
+            color = Periwinkle,
             style = MaterialTheme.typography.labelLarge
         )
     }

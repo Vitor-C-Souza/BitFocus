@@ -39,7 +39,7 @@ import br.me.vitorcsouza.bitfocus.ui.components.BitFocusButton
 import br.me.vitorcsouza.bitfocus.ui.theme.BorderGray
 import br.me.vitorcsouza.bitfocus.ui.theme.DeepCharcoal
 import br.me.vitorcsouza.bitfocus.ui.theme.ElectricCyan
-import br.me.vitorcsouza.bitfocus.ui.theme.SecondaryPeriwinkle
+import br.me.vitorcsouza.bitfocus.ui.theme.Periwinkle
 import br.me.vitorcsouza.bitfocus.ui.theme.White
 
 @Composable
@@ -86,7 +86,7 @@ fun SetupContent(
                 )
                 Text(
                     text = "Configure your focus session",
-                    color = SecondaryPeriwinkle,
+                    color = Periwinkle,
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -94,7 +94,7 @@ fun SetupContent(
             BentoCard {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text("Energy Level", color = White, style = MaterialTheme.typography.titleMedium)
-                    Text("Match your current state", color = SecondaryPeriwinkle, style = MaterialTheme.typography.bodySmall)
+                    Text("Match your current state", color = Periwinkle, style = MaterialTheme.typography.bodySmall)
                 }
 
                 Row(
@@ -131,7 +131,7 @@ fun SetupContent(
             BentoCard {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text("Duration", color = White, style = MaterialTheme.typography.titleMedium)
-                    Text("How long will you focus?", color = SecondaryPeriwinkle, style = MaterialTheme.typography.bodySmall)
+                    Text("How long will you focus?", color = Periwinkle, style = MaterialTheme.typography.bodySmall)
                 }
 
                 Column(
@@ -146,7 +146,7 @@ fun SetupContent(
                     )
                     Text(
                         text = "minutes",
-                        color = SecondaryPeriwinkle,
+                        color = Periwinkle,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -197,7 +197,7 @@ fun SetupContent(
             BentoCard {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text("Session Goal", color = White, style = MaterialTheme.typography.titleMedium)
-                    Text("What are you working on?", color = SecondaryPeriwinkle, style = MaterialTheme.typography.bodySmall)
+                    Text("What are you working on?", color = Periwinkle, style = MaterialTheme.typography.bodySmall)
                 }
                 TextField(
                     value = state.sessionGoal,
