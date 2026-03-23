@@ -15,9 +15,12 @@ import br.me.vitorcsouza.bitfocus.MainActivity
 
 object NotificationHelper {
     private const val CHANNEL_ID = "focus_channel"
+    private const val WELLNESS_CHANNEL_ID = "wellness_channel"
 
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 "Focus Timer",
@@ -25,9 +28,16 @@ object NotificationHelper {
             ).apply {
                 description = "Notificações de conclusão de foco"
             }
-
-            val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.createNotificationChannel(channel)
+
+            val wellnessChannel = NotificationChannel(
+                WELLNESS_CHANNEL_ID,
+                "Lembretes de Bem-estar",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Lembretes durante a sessão de foco"
+            }
+            manager.createNotificationChannel(wellnessChannel)
         }
     }
 
@@ -54,6 +64,21 @@ object NotificationHelper {
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
 
+        sendNotify(context, 1001, builder.build())
+    }
+
+    fun showWellnessNotification(context: Context, message: String) {
+        val builder = NotificationCompat.Builder(context, WELLNESS_CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_lock_idle_lock)
+            .setContentTitle("BitFocus: Bem-estar")
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+
+        sendNotify(context, 2002, builder.build())
+    }
+
+    private fun sendNotify(context: Context, id: Int, notification: android.app.Notification) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ActivityCompat.checkSelfPermission(
                     context,
@@ -63,7 +88,6 @@ object NotificationHelper {
                 return
             }
         }
-
-        NotificationManagerCompat.from(context).notify(1001, builder.build())
+        NotificationManagerCompat.from(context).notify(id, notification)
     }
 }

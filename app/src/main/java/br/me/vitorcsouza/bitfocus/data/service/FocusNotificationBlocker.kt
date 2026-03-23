@@ -11,6 +11,7 @@ import android.service.notification.StatusBarNotification
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.IconCompat
+import androidx.core.graphics.drawable.IconCompat.createFromIcon
 
 class FocusNotificationBlocker : NotificationListenerService() {
 
@@ -23,7 +24,6 @@ class FocusNotificationBlocker : NotificationListenerService() {
         
         var isFocusModeActive = false
 
-        // Lista estática para persistir as notificações capturadas
         private val silencedNotifications = mutableListOf<StatusBarNotification>()
     }
 
@@ -46,7 +46,6 @@ class FocusNotificationBlocker : NotificationListenerService() {
                 stopSelf()
             }
             else -> {
-                // Se o sistema reiniciar o serviço sem action
                 if (isFocusModeActive) {
                     startFocusForeground()
                 }
@@ -57,15 +56,16 @@ class FocusNotificationBlocker : NotificationListenerService() {
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         if (isFocusModeActive && sbn != null) {
-            // Ignora a própria notificação do BitFocus
-            if (sbn.packageName == packageName) return
+            // Se a notificação for do próprio app BitFocus, não bloqueia
+            if (sbn.packageName == packageName) {
+                Log.d("FocusBlocker", "Ignorando notificação do próprio app.")
+                return
+            }
 
-            // Armazena a notificação para liberar depois
             synchronized(silencedNotifications) {
                 silencedNotifications.add(sbn)
             }
 
-            // Cancela para remover da tela agora
             cancelNotification(sbn.key)
             Log.d("FocusBlocker", "Silenciada: ${sbn.packageName}. Total: ${silencedNotifications.size}")
         }
@@ -80,8 +80,8 @@ class FocusNotificationBlocker : NotificationListenerService() {
 
         if (listToRelease.isEmpty()) return
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val packageManager = packageManager // Para buscar o nome do app
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val packageManager = packageManager
         createChannels(notificationManager)
 
         listToRelease.forEach { sbn ->
@@ -89,12 +89,11 @@ class FocusNotificationBlocker : NotificationListenerService() {
                 val original = sbn.notification
                 val extras = original.extras
 
-                // Busca o nome do app (ex: WhatsApp)
                 val appName = try {
                     val appInfo = packageManager.getApplicationInfo(sbn.packageName, 0)
                     packageManager.getApplicationLabel(appInfo).toString()
                 } catch (e: Exception) {
-                    sbn.packageName // Fallback para o id do pacote
+                    sbn.packageName
                 }
 
                 val title = extras.getCharSequence(Notification.EXTRA_TITLE)
@@ -104,16 +103,15 @@ class FocusNotificationBlocker : NotificationListenerService() {
                 val builder = NotificationCompat.Builder(this, RELEASE_CHANNEL_ID)
                     .setContentTitle(title)
                     .setContentText(text)
-                    .setSubText(appName) // <--- Isso mostra "WhatsApp" logo acima do título
+                    .setSubText(appName)
                     .setSmallIcon(android.R.drawable.ic_dialog_info)
                     .setContentIntent(original.contentIntent)
                     .setAutoCancel(true)
                     .setWhen(sbn.postTime)
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
-                // Tenta usar o ícone original do app
                 original.smallIcon?.let {
-                    val iconCompat = IconCompat.createFromIcon(this, it)
+                    val iconCompat = createFromIcon(this, it)
                     if (iconCompat != null) builder.setSmallIcon(iconCompat)
                 }
 

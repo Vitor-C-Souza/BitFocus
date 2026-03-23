@@ -12,6 +12,7 @@ import androidx.work.WorkManager
 import androidx.work.workDataOf
 import br.me.vitorcsouza.bitfocus.data.service.FocusNotificationBlocker
 import br.me.vitorcsouza.bitfocus.data.worker.TimerWorker
+import br.me.vitorcsouza.bitfocus.data.worker.WellnessWorker.Companion.wellnessMessages
 import br.me.vitorcsouza.bitfocus.domain.model.FocusSession
 import br.me.vitorcsouza.bitfocus.domain.usecase.home.HomeUseCase
 import br.me.vitorcsouza.bitfocus.ui.presentation.setup.EnergyLevel
@@ -81,6 +82,7 @@ class HomeViewModel @Inject constructor(
 
         timerJob = viewModelScope.launch {
             var remainingTime = durationSeconds
+            
             while (remainingTime >= 0) {
                 val minutes = remainingTime / 60
                 val seconds = remainingTime % 60
@@ -89,6 +91,12 @@ class HomeViewModel @Inject constructor(
                         timerDisplay = String.format(Locale.US, "%02d:%02d", minutes, seconds),
                         progress = remainingTime.toFloat() / durationSeconds
                     )
+                }
+
+                val elapsedSeconds = totalSeconds - remainingTime
+                if (elapsedSeconds > 0 && elapsedSeconds % 1200 == 0L) {
+                    val currentMessage = wellnessMessages.random()
+                    NotificationHelper.showWellnessNotification(context, currentMessage)
                 }
 
                 if (remainingTime == 0L) {
