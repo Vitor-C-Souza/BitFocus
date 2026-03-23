@@ -1,6 +1,8 @@
 package br.me.vitorcsouza.bitfocus.ui.presentation.home
 
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +10,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import br.me.vitorcsouza.bitfocus.data.service.FocusNotificationBlocker
 import br.me.vitorcsouza.bitfocus.data.worker.TimerWorker
 import br.me.vitorcsouza.bitfocus.domain.model.FocusSession
 import br.me.vitorcsouza.bitfocus.domain.usecase.home.HomeUseCase
@@ -114,6 +117,15 @@ class HomeViewModel @Inject constructor(
             ExistingWorkPolicy.REPLACE,
             workRequest
         )
+
+        val intent = Intent(context, FocusNotificationBlocker::class.java).apply {
+            action = FocusNotificationBlocker.ACTION_START_FOCUS
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent)
+        } else {
+            context.startService(intent)
+        }
     }
 
 
@@ -121,6 +133,13 @@ class HomeViewModel @Inject constructor(
     private fun stopTimer() {
         timerJob?.cancel()
         _state.update { it.copy(isRunning = false) }
+
+        val intent = Intent(context, FocusNotificationBlocker::class.java).apply {
+            action = FocusNotificationBlocker.ACTION_STOP_FOCUS
+        }
+        context.startService(intent)
+
+        WorkManager.getInstance(context).cancelUniqueWork("timer_unique_work")
     }
 
     private fun onTimerFinished() {
@@ -139,6 +158,10 @@ class HomeViewModel @Inject constructor(
             _state.update { it.copy(sessionComplete = true, isRunning = false) }
         }
 
+        val intent = Intent(context, FocusNotificationBlocker::class.java).apply {
+            action = FocusNotificationBlocker.ACTION_STOP_FOCUS
+        }
+        context.startService(intent)
     }
 
     fun onNavigatedToCompletion() {

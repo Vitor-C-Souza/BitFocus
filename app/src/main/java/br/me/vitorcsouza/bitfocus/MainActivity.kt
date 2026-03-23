@@ -1,10 +1,14 @@
 package br.me.vitorcsouza.bitfocus
 
 import android.Manifest
+import android.app.NotificationManager
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,6 +22,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import br.me.vitorcsouza.bitfocus.data.service.FocusNotificationBlocker
 import br.me.vitorcsouza.bitfocus.ui.navigation.BitFocusNavGraph
 import br.me.vitorcsouza.bitfocus.ui.theme.BitFocusTheme
 import br.me.vitorcsouza.bitfocus.utils.NotificationHelper.createNotificationChannel
@@ -37,6 +42,7 @@ class MainActivity : ComponentActivity() {
 
         createNotificationChannel(this)
         requestNotificationPermission()
+        checkNotificationPermissions()
 
         setContent {
             BitFocusTheme {
@@ -87,6 +93,22 @@ class MainActivity : ComponentActivity() {
             ) {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
+        }
+    }
+
+    private fun checkNotificationPermissions() {
+        val componentName = ComponentName(this, FocusNotificationBlocker::class.java)
+        val enabledListeners = Settings.Secure.getString(contentResolver, "enabled_notification_listeners")
+        val isListenerEnabled = enabledListeners?.contains(componentName.flattenToString()) == true
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val isPolicyEnabled =
+            notificationManager.isNotificationPolicyAccessGranted
+
+        if (!isListenerEnabled) {
+            startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+        } else if (!isPolicyEnabled) {
+            startActivity(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
         }
     }
 }
