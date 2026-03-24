@@ -2,10 +2,23 @@
 
 **BitFocus** é um aplicativo de produtividade de alto desempenho desenvolvido para Android, focado em ajudar usuários a atingirem o estado de "deep work" através de ciclos de foco otimizados, metas claras e acompanhamento de níveis de energia.
 
+![BitFocus App Preview](screenshots/preview.png)
+
 ![Android](https://img.shields.io/badge/Platform-Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/Language-Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)
 ![Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-4285F4?style=for-the-badge&logo=jetpackcompose&logoColor=white)
 ![Clean Architecture](https://img.shields.io/badge/Architecture-Clean-blue?style=for-the-badge)
+
+---
+
+## 📱 Visual do Aplicativo
+
+O BitFocus utiliza uma linguagem visual moderna baseada em "Bento Cards" e elementos neon para reduzir a carga cognitiva e aumentar a imersão:
+
+- **Home Screen**: Timer centralizado com anel de progresso estilizado.
+- **Session Setup**: Configuração intuitiva de níveis de energia e duração.
+- **Focus Lab**: Dashboard de análise com gráficos de tendências semanais.
+- **Completion**: Celebração de conquistas e manutenção de streaks.
 
 ---
 
